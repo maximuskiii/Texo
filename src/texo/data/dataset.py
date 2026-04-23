@@ -109,7 +109,10 @@ class MERDatasetHF(Dataset):
         return len(self.dataset)
 
     def __getitem__(self, index: int):
-        image = Image.open(io.BytesIO(self.dataset[index]['image']))
+        img_field = self.dataset[index]['image']
+        if isinstance(img_field, dict):
+            img_field = img_field['bytes']
+        image = Image.open(io.BytesIO(img_field))
         processed_image = self.image_processor(image)
         text = self.dataset[index]['text']
 
