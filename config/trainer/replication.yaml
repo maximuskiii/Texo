@@ -4,7 +4,7 @@ accelerator: gpu
 devices: 1
 num_nodes: 1
 precision: bf16-mixed
-accumulate_grad_batches: 1
+accumulate_grad_batches: 4   # effective batch = 16 * 4 = 64
 log_every_n_steps: 50
 max_epochs: 10     # full 500K-step schedule = ~32 epochs; 10 gives a solid curve cheaply
 val_check_interval: 1000

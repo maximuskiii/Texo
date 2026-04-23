@@ -18,8 +18,8 @@ text_processor:
     return_tensors: pt
     return_attention_mask: true
     pad_to_multiple_of: 8
-train_batch_size: 64
-val_batch_size: 64
+train_batch_size: 16
+val_batch_size: 16
 test_batch_size: 8
 num_workers: 10
 sampling_strategy: null
