@@ -1,0 +1,42 @@
+_target_: lightning.pytorch.trainer.Trainer
+default_root_dir: ${output_dir}
+accelerator: gpu
+devices: 1
+num_nodes: 1
+precision: bf16-mixed
+accumulate_grad_batches: 1
+log_every_n_steps: 50
+max_epochs: 30
+val_check_interval: 1000
+profiler: null
+
+callbacks:
+  - _target_: lightning.pytorch.callbacks.ModelCheckpoint
+    filename: "{step}-{val_loss:.4e}-{BLEU:.4f}-{edit_distance:.4f}"
+    save_top_k: 5
+    save_last: true
+    monitor: "BLEU"
+    mode: "max"
+    every_n_epochs: 1
+
+  - _target_: lightning.pytorch.callbacks.RichModelSummary
+    max_depth: 3
+
+  - _target_: lightning.pytorch.callbacks.LearningRateMonitor
+    logging_interval: "step"
+
+  - _target_: lightning.pytorch.callbacks.RichProgressBar
+    refresh_rate: 10
+
+logger:
+  - _target_: lightning.pytorch.loggers.WandbLogger
+    project: got-mer-comparison
+    name: texo-replication
+    tags: ["texo", "replication", "unimer-merged"]
+    log_model: false
+    save_dir: ${output_dir}
+  - _target_: lightning.pytorch.loggers.TensorBoardLogger
+    save_dir: ${output_dir}
+    name: ""
+    version: ""
+    sub_dir: "tb_logs"

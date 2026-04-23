@@ -1,0 +1,25 @@
+# Data config for replication using m4xi/unimer-merged (same train data as GOT experiment).
+# Run scripts/texo/prepare_data.py first to download and save datasets to disk.
+train_dataset_path: ./data/dataset/hf_datasets/unimer-merged/train
+filter_train: false
+eval_dataset_path: ./data/dataset/hf_datasets/unimer-merged/val
+test_dataset_paths: ./data/dataset/hf_datasets/UniMER-Test
+image_processor:
+  image_size:
+    width: 384
+    height: 384
+text_processor:
+  tokenizer_path: ${model.tokenizer_path}
+  tokenizer_config:
+    add_special_tokens: true
+    max_length: 1024
+    padding: longest
+    truncation: true
+    return_tensors: pt
+    return_attention_mask: true
+    pad_to_multiple_of: 8
+train_batch_size: 64
+val_batch_size: 64
+test_batch_size: 8
+num_workers: 10
+sampling_strategy: null

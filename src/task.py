@@ -56,28 +56,27 @@ class FormulaNetLit(LightningModule):
     
     def training_step(self, batch, batch_idx):
         loss = self.model_step(batch, batch_idx)
-        self.log("train_loss", loss, on_step=True, on_epoch=False, logger=True)
-        # self.log("seq_len", batch["labels"].size(-1), on_step=True, on_epoch=False, logger=True)
+        self.log("train_loss", loss, on_step=True, on_epoch=False, logger=True, prog_bar=True)
         return loss
-    
+
     def validation_step(self, batch, batch_idx):
         loss = self.model_step(batch, batch_idx)
-        self.log("val_loss", loss, on_step=False, on_epoch=True, logger=True)
-    
+        self.log("val_loss", loss, on_step=False, on_epoch=True, logger=True, prog_bar=True)
+
         # compute BLEU and edit distance
         labels = batch["labels"]
         labels[labels == -100] = self.model.config.pad_token_id
         ref_str = self.tokenizer.batch_decode(labels, skip_special_tokens=True)
 
-        max_length = labels.shape[-1] # in validation, since we know how long the ground truth is, we truncate to it to save computation.
+        max_length = labels.shape[-1]
 
         outputs = self.generate(batch["pixel_values"], num_beams=1, do_sample=False, max_length=max_length)
         pred_str = self.tokenizer.batch_decode(outputs, skip_special_tokens=True)
         bleu = compute_bleu(pred_str, ref_str)
         edit_distance = compute_edit_distance(pred_str, ref_str)
 
-        self.log("BLEU", bleu, on_step=False, on_epoch=True, logger=True)
-        self.log("edit_distance", edit_distance, on_step=False, on_epoch=True, logger=True)
+        self.log("BLEU", bleu, on_step=False, on_epoch=True, logger=True, prog_bar=True)
+        self.log("edit_distance", edit_distance, on_step=False, on_epoch=True, logger=True, prog_bar=True)
     
     def test_step(self, batch, batch_idx, dataloader_idx):
         # compute BLEU and edit distance

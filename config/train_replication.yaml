@@ -1,0 +1,10 @@
+# Replication config: Texo-distill trained on m4xi/unimer-merged,
+# evaluated on alephpi/UniMER-Test. Matches GOT experiment data discipline.
+defaults:
+  - global
+  - hydra: default
+  - model: formulanet-S-distill
+  - data: unimer-merged
+  - training: finetune_distill
+  - trainer: replication
+  - _self_
