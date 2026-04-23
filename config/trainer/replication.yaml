@@ -6,7 +6,7 @@ num_nodes: 1
 precision: bf16-mixed
 accumulate_grad_batches: 1
 log_every_n_steps: 50
-max_epochs: 5      # cosine schedule exhausts at ~70K steps = ~4.3 epochs; cap at 5
+max_epochs: 10     # full 500K-step schedule = ~32 epochs; 10 gives a solid curve cheaply
 val_check_interval: 1000
 profiler: null
 
