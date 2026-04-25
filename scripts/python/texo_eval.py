@@ -7,9 +7,6 @@ Usage:
         --ckpt ./outputs/.../checkpoints/last.ckpt \
         --test_root ./data/dataset/hf_datasets/UniMER-Test
 
-    # With CDM:
-    python scripts/python/texo_eval.py --ckpt <ckpt> --cdm
-
 Run from the Texo repo root.
 """
 
@@ -56,8 +53,6 @@ def parse_args():
     p.add_argument("--max_samples", type=int, default=None)
     p.add_argument("--output", default="results/texo_eval.json")
     p.add_argument("--save_predictions", action="store_true")
-    p.add_argument("--cdm", action="store_true", default=False)
-    p.add_argument("--cdm_root", default=None)
     p.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     return p.parse_args()
 
@@ -140,7 +135,7 @@ def main():
             args.batch_size, args.max_new_tokens, args.num_workers, args.device,
         )
 
-        metrics = compute_metrics(preds, refs, include_cdm=args.cdm, cdm_root=args.cdm_root)
+        metrics = compute_metrics(preds, refs)
         all_split_results[split_name] = metrics
         if args.save_predictions:
             all_split_preds[split_name] = [{"pred": p, "ref": r} for p, r in zip(preds, refs)]
@@ -150,16 +145,10 @@ def main():
         print(
             f"  {split:<6}  NED={m.get('ned', float('nan')):.4f}"
             f"  BLEU={m.get('bleu4', float('nan')):.4f}"
-            f"  EM={m.get('exact_match', float('nan')):.4f}",
-            end="",
+            f"  EM={m.get('exact_match', float('nan')):.4f}"
+            f"  CDM={m.get('cdm_f1', float('nan')):.4f}"
+            f"  ExpRate={m.get('cdm_exprate', float('nan')):.4f}"
         )
-        if args.cdm:
-            print(
-                f"  CDM={m.get('cdm_f1', float('nan')):.4f}"
-                f"  ExpRate={m.get('cdm_exprate', float('nan')):.4f}",
-                end="",
-            )
-        print()
 
     output = {
         "config": {
