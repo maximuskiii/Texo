@@ -135,6 +135,12 @@ def main():
             args.batch_size, args.max_new_tokens, args.num_workers, args.device,
         )
 
+        preds_dump = Path(args.output).parent / f"texo_preds_{split_name}.json"
+        preds_dump.parent.mkdir(parents=True, exist_ok=True)
+        with open(preds_dump, "w") as f:
+            json.dump([{"pred": p, "ref": r} for p, r in zip(preds, refs)], f)
+        print(f"  saved {len(preds)} preds → {preds_dump}")
+
         metrics = compute_metrics(preds, refs)
         all_split_results[split_name] = metrics
         if args.save_predictions:
